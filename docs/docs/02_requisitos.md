@@ -35,6 +35,19 @@ O sistema deve permitir que psicólogos cadastrem dias e horários em que estão
 ### RF010 – Visualização da agenda pelos pacientes
 O sistema deve permitir que pacientes vejam a agenda do psicólogo e escolham o melhor horário para entrar em contato ou agendar externamente.
 
+### RF011 – Envio e armazenamento de informações básicas ao psicólogo
+Antes de ser redirecionado para o contato externo, o paciente deve preencher um pequeno formulário com os seguintes dados:
+
+- Nome completo
+- Idade
+- Gênero (opcional)
+- Motivo do interesse pelo atendimento
+- Melhor horário para contato
+
+Essas informações devem ser:
+- Armazenadas no banco de dados associadas ao psicólogo selecionado.
+- Visualizadas pelo psicólogo no seu painel, em uma área chamada “Contatos recebidos”.
+
 ---
 
 ## 🚧 Requisitos Não Funcionais (RNF)
