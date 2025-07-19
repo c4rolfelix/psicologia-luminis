@@ -1,0 +1,70 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosf
+*.sln.docstates
+
+# Binaries
+[Dd]ebug/
+[Rr]elease/
+*.exe
+*.pdb
+*.dll
+*.obj
+*.o
+*.lib
+*.so
+*.dylib
+*.a
+*.exp
+*.ilk
+*.log
+*.bin
+*.tmp
+*.temp
+*.backup
+*.bak
+*.old
+*.orig
+*.rej
+*.sbr
+*.bsc
+*.res
+*.pch
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cache
+*.db
+*.tlog
+*.vshost.*
+
+# NuGet
+*.nupkg
+*.snupkg
+*.props
+*.targets
+packages/
+*.nuget.g.props
+*.nuget.g.targets
+
+# Entity Framework Core Migrations (se você não quiser versionar os arquivos de snapshot/designer)
+# Mas geralmente é bom versionar as migrations. Esta linha é mais para o snapshot.
+*.ModelSnapshot.cs
+
+# User-specific files
+*.userprefs
+*.vspscc
+*.vssscc
+*.vspcc
+*.scc
+
+# Other common files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

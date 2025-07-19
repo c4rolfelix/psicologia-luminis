@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Luminis.Models.Psicologo>
+@{
+    ViewData["Title"] = "Painel Administrativo - Psicólogos";
+}
+
+<div class="container mt-4">
+    <h2>Painel Administrativo - Gerenciar Psicólogos</h2>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mb-3" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome Completo</th>
+                    <th>E-mail</th>
+                    <th>CRP</th>
+                    <th>WhatsApp</th>
+                    <th>Especialidades</th>
+                    <th>Data Cadastro</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var psicologo in Model)
+                {
+                    <tr>
+                        <td>@psicologo.Nome @psicologo.Sobrenome</td>
+                        <td>@psicologo.Email</td>
+                        <td>@psicologo.CRP</td>
+                        <td>@psicologo.WhatsApp</td>
+                        <td>
+                            @if (psicologo.Especialidades != null && psicologo.Especialidades.Any())
+                            {
+                                @string.Join(", ", psicologo.Especialidades.Select(e => e.Nome))
+                            }
+                            else
+                            {
+                                <span>N/A</span>
+                            }
+                        </td>
+                        <td>@psicologo.DataCadastro.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            @if (psicologo.Ativo)
+                            {
+                                <span class="badge bg-success">Ativo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inativo</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="ToggleActive" asp-controller="Admin" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@psicologo.Id" />
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm @(psicologo.Ativo ? "btn-warning" : "btn-success")">
+                                    @(psicologo.Ativo ? "Desativar" : "Ativar")
+                                </button>
+                            </form>
+                            @* Futuros botões de Editar/Detalhes/Excluir aqui *@
+                            @* <a asp-controller="Admin" asp-action="Edit" asp-route-id="@psicologo.Id" class="btn btn-sm btn-info ms-1">Editar</a> *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Nenhum psicólogo cadastrado ainda.
+        </div>
+    }
+</div>

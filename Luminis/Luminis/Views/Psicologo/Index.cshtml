@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Luminis.Models.Psicologo>
+@{
+    ViewData["Title"] = "Encontre seu Psicólogo - Luminis";
+    var especialidades = ViewBag.Especialidades as List<Luminis.Models.Especialidade>;
+    var currentSearchSpecialty = Context.Request.Query["searchSpecialty"].ToString();
+}
+
+<div class="container mt-4">
+    <h2>Encontre seu Psicólogo</h2>
+    <p class="lead">Selecione uma especialidade para encontrar o profissional ideal.</p>
+    <hr />
+
+    <form asp-controller="Psicologo" asp-action="Index" method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-8">
+                <select name="searchSpecialty" class="form-select" aria-label="Selecione uma especialidade">
+                    <option value="">Todas as Especialidades</option> 
+                    @if (especialidades != null)
+                    {
+                        foreach (var esp in especialidades)
+                        {
+                            <option value="@esp.Nome" selected="@(esp.Nome == currentSearchSpecialty ? "selected" : null)">
+                                @esp.Nome
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <a asp-controller="Psicologo" asp-action="Index" class="btn btn-secondary">Limpar Filtro</a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var psicologo in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(string.IsNullOrEmpty(psicologo.FotoUrl) ? "/images/default-avatar.png" : psicologo.FotoUrl)"
+                             class="card-img-top profile-avatar" alt="Foto de @psicologo.Nome"
+                             onerror="this.onerror=null;this.src='/images/default-avatar.png';" />
+                        <div class="card-body">
+                            <h5 class="card-title">@psicologo.Nome @psicologo.Sobrenome</h5>
+                            <p class="card-text"><small class="text-muted">CRP: @psicologo.CRP</small></p>
+                            <p class="card-text">
+                                <strong>Especialidades:</strong>
+                                @if (psicologo.Especialidades != null && psicologo.Especialidades.Any())
+                                {
+                                    @string.Join(", ", psicologo.Especialidades.Select(e => e.Nome))
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </p>
+                            <p class="card-text">
+                                <i class="bi bi-whatsapp"></i> WhatsApp: <a href="https://wa.me/@psicologo.WhatsApp" target="_blank" class="text-success">@psicologo.WhatsApp</a>
+                            </p>
+                            <a asp-controller="Psicologo" asp-action="Details" asp-route-id="@psicologo.Id" class="btn btn-sm btn-outline-primary">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Nenhum psicólogo encontrado com os critérios de busca.
+        </div>
+    }
+</div>
+
+<style>
+    .profile-avatar {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+</style>
