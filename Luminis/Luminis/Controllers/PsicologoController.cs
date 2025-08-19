@@ -16,20 +16,16 @@ namespace Luminis.Controllers // Verifique seu namespace! Deve ser Luminis.Contr
             _context = context;
         }
 
-        // GET: Psicologo/Index (Listagem de Psicólogos com Filtro)
         public async Task<IActionResult> Index(string searchSpecialty)
         {
-            // 1. Obter todas as especialidades para o filtro (dropdown/checkboxes)
             ViewBag.Especialidades = await _context.Especialidades
                                                    .OrderBy(e => e.Nome)
                                                    .ToListAsync();
 
-            // 2. Construir a consulta de psicólogos ativos
             IQueryable<Psicologo> psicologosQuery = _context.Psicologos
                                                              .Where(p => p.Ativo == true) // Apenas psicólogos ATIVOS
                                                              .Include(p => p.Especialidades); // Inclui as especialidades relacionadas
 
-            // 3. Aplicar filtro por especialidade, se houver
             if (!string.IsNullOrEmpty(searchSpecialty))
             {
                 psicologosQuery = psicologosQuery.Where(p =>
@@ -37,14 +33,11 @@ namespace Luminis.Controllers // Verifique seu namespace! Deve ser Luminis.Contr
                 );
             }
 
-            // 4. Executar a consulta e obter a lista de psicólogos
             var psicologos = await psicologosQuery.ToListAsync();
 
-            // 5. Retorna a View com a lista de psicólogos
             return View(psicologos);
         }
 
-        // GET: Psicologo/Details/{id} (Página de Detalhes do Psicólogo)
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

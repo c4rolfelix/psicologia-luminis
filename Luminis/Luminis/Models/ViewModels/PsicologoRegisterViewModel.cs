@@ -37,8 +37,6 @@ namespace Luminis.Models.ViewModels
         public string ConfirmarSenha { get; set; }
 
         [Required(ErrorMessage = "O número de WhatsApp é obrigatório.")]
-        [StringLength(16, ErrorMessage = "O número de WhatsApp deve ter o formato (00) 00000-0000.", MinimumLength = 15)] 
-        [RegularExpression(@"^\(\d{2}\) \d{5}-\d{4}$", ErrorMessage = "O número de WhatsApp deve ter o formato (00) 00000-0000.")]
         [Display(Name = "Número de WhatsApp")]
         public string WhatsApp { get; set; }
     }

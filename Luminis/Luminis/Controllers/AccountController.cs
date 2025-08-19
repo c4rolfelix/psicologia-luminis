@@ -28,21 +28,17 @@ namespace Luminis.Controllers
             return View();
         }
 
-        // processa o envio do formulário de registro
         [HttpPost]
         [ValidateAntiForgeryToken] 
         public async Task<IActionResult> Register(PsicologoRegisterViewModel model)
         {
-            // Validações do servidor 
             if (ModelState.IsValid)
             {
-                // Verifica e-mail
                 if (await _context.Psicologos.AnyAsync(p => p.Email == model.Email))
                 {
                     ModelState.AddModelError("Email", "Este e-mail já está em uso.");
                     return View(model);
                 }
-                // Verifica CRP
                 if (await _context.Psicologos.AnyAsync(p => p.CRP == model.CRP))
                 {
                     ModelState.AddModelError("CRP", "Este CRP já está cadastrado.");
@@ -57,7 +53,6 @@ namespace Luminis.Controllers
                     Sobrenome = model.Sobrenome,
                     CRP = model.CRP,
                     Email = model.Email,
-                    SenhaHash = senhaHash, 
                     Biografia = null, 
                     FotoUrl = null,   
                     WhatsApp = model.WhatsApp,
@@ -81,7 +76,6 @@ namespace Luminis.Controllers
             return View();
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -137,26 +131,6 @@ namespace Luminis.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home"); 
-        }
-
-        private bool VerifyPasswordHash(string password, string storedHash)
-        {
-
-            return HashPassword(password) == storedHash;
-        }
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
-            }
         }
     }
 }
