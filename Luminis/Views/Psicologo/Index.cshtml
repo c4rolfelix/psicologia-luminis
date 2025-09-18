@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Luminis.Models.Psicologo>
+@{
+    ViewData["Title"] = "Encontre seu Psicólogo - Luminis";
+    var especialidades = ViewBag.Especialidades as List<Luminis.Models.Especialidade>;
+    var currentSearchSpecialty = Context.Request.Query["searchSpecialty"].ToString();
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold">Encontre seu Psicólogo</h2>
+    <p class="lead">Selecione uma especialidade para encontrar o profissional ideal.</p>
+    <hr />
+
+    <form asp-controller="Psicologo" asp-action="Index" method="get" class="mb-4">
+        <div class="row g-2">
+            <div class="col-12 col-md-8">
+                <select name="searchSpecialty" class="form-select" aria-label="Selecione uma especialidade">
+                    <option value="">Todas as Especialidades</option>
+                    @if (especialidades != null)
+                    {
+                        foreach (var esp in especialidades)
+                        {
+                            <option value="@esp.Nome" selected="@(esp.Nome == currentSearchSpecialty ? "selected" : null)">
+                                @esp.Nome
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-4 d-grid gap-2 d-md-flex">
+                <button type="submit" class="btn btn-primary flex-fill">Buscar</button>
+                <a asp-controller="Psicologo" asp-action="Index" class="btn btn-secondary flex-fill">Limpar Filtro</a>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var psicologo in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(string.IsNullOrEmpty(psicologo.FotoUrl) ? "/images/default-avatar.png" : psicologo.FotoUrl)"
+                             class="card-img-top profile-avatar" alt="Foto de @psicologo.Nome"
+                             onerror="this.onerror=null;this.src='/images/default-avatar.png';" />
+                        <div class="card-body">
+                            <h5 class="card-title">@psicologo.Nome @psicologo.Sobrenome</h5>
+                            <p class="card-text"><small class="text-muted">CRP: @psicologo.CRP</small></p>
+                            <small class="text-muted">Idade: @psicologo.GetIdade() anos</small>
+                            <p class="card-text">
+                                <strong>Especialidades:</strong>
+                                @if (psicologo.Especialidades != null && psicologo.Especialidades.Any())
+                                {
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach (var especialidade in psicologo.Especialidades)
+                                        {
+                                            <span class="badge rounded-pill bg-primary">@especialidade.Nome</span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </p>
+                            <a asp-controller="Psicologo" asp-action="Details" asp-route-id="@psicologo.Id" class="btn btn-sm btn-outline-primary">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Nenhum psicólogo encontrado com os critérios de busca.
+        </div>
+    }
+</div>
+
+<style>
+    .profile-avatar {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+</style>

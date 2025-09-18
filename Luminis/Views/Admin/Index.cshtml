@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Luminis.Models.Psicologo>
+@{
+    ViewData["Title"] = "Painel Administrativo - Psicólogos";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary fw-bold">Painel Administrativo</h2>
+    <p class="lead">Gerenciar perfis de psicólogos e visibilidade na plataforma.</p>
+    <hr />
+
+    @* Mensagem de Sucesso *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mb-3" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @* Formulário de Pesquisa *@
+    <form asp-controller="Admin" asp-action="Index" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="searchString" class="form-control" placeholder="Pesquisar por nome, email ou CRP" value="@ViewData["CurrentFilter"]">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+
+    @* Tabela de Psicólogos *@
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive shadow-sm rounded-3">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead style="background-color: #064fc5; color: white;">
+                    <tr>
+                        <th scope="col">Nome Completo</th>
+                        <th scope="col" class="d-none-mobile">E-mail</th>
+                        <th scope="col" class="d-none-mobile">CRP</th>
+                        <th scope="col" class="d-none-mobile">WhatsApp</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Destaque</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var psicologo in Model)
+                    {
+                        <tr>
+                            <td>@psicologo.Nome @psicologo.Sobrenome</td>
+                            <td class="d-none-mobile">@psicologo.Email</td>
+                            <td class="d-none-mobile">@psicologo.CRP</td>
+                            <td class="d-none-mobile">@psicologo.WhatsApp</td>
+                            <td>
+                                @if (psicologo.Ativo)
+                                {
+                                    <span class="badge bg-success">Ativo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inativo</span>
+                                }
+                            </td>
+                            <td>
+                                @if (psicologo.EmDestaque)
+                                {
+                                    <span id="destaque-status-@psicologo.Id" class="badge bg-info text-dark">Em Destaque</span>
+                                }
+                                else
+                                {
+                                    <span id="destaque-status-@psicologo.Id" class="badge bg-secondary">Normal</span>
+                                }
+                            </td>
+                            <td class="d-flex flex-nowrap gap-1">
+                                <form asp-action="ToggleActive" asp-controller="Admin" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@psicologo.Id" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm @(psicologo.Ativo ? "btn-warning" : "btn-success")" title="@(psicologo.Ativo ? "Desativar Perfil" : "Ativar Perfil")">
+                                        <i class="bi @(psicologo.Ativo ? "bi-eye-slash-fill" : "bi-eye-fill")"></i>
+                                    </button>
+                                </form>
+
+                                <button type="button" class="btn btn-sm @(psicologo.EmDestaque ? "btn-outline-info" : "btn-info") toggle-destaque-btn" data-id="@psicologo.Id" title="@(psicologo.EmDestaque ? "Remover do Destaque" : "Colocar em Destaque")">
+                                    <i class="bi bi-star-fill"></i>
+                                </button>
+
+                                <form asp-action="Delete" asp-controller="Admin" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@psicologo.Id" />
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este perfil? Esta ação é irreversível.');" title="Excluir Perfil">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            Nenhum psicólogo cadastrado ainda.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <style>
+        @@media (max-width: 767px) {
+            .d-none-mobile {
+                display: none;
+            }
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            $('.toggle-destaque-btn').on('click', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                var psicologoId = btn.data('id');
+                var currentDestaque = btn.hasClass('btn-info');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleDestaque", "Admin")',
+                    type: 'POST',
+                    data: { id: psicologoId, '__RequestVerificationToken': token },
+                    success: function (response) {
+                        btn.toggleClass('btn-info btn-outline-info');
+
+                        var newTitle = currentDestaque ? 'Colocar em Destaque' : 'Remover do Destaque';
+                        btn.attr('title', newTitle);
+
+                        var statusBadge = $('#destaque-status-' + psicologoId);
+                        if (currentDestaque) {
+                            statusBadge.removeClass('bg-info text-dark').addClass('bg-secondary').text('Normal');
+                        } else {
+                            statusBadge.removeClass('bg-secondary').addClass('bg-info text-dark').text('Em Destaque');
+                        }
+                    },
+                    error: function (xhr) {
+                        alert('Ocorreu um erro ao tentar alterar o destaque. Tente novamente.');
+                    }
+                });
+            });
+        });
+    </script>
+}

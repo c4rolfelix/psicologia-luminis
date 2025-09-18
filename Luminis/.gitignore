@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+
+# C# & .NET Core
+*.dll
+*.exe
+*.pdb
+*.csproj.user
+*.sln
+
+# Entity Framework Core
+# Migrations folders and designer files can be ignored if they are auto-generated
+# You might want to track Migrations for team collaboration, though.
+# Migrations/
+*.ModelSnapshot.cs
+*.Designer.cs
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
