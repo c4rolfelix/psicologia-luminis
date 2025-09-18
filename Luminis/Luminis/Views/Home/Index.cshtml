@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Luminis.Models.Psicologo>
+@{
+    ViewData["Title"] = "Luminis - Conectando você ao bem-estar";
+}
+
+<div class="jumbotron text-center bg-light py-5">
+    <h1 class="display-4">Luminis: Seu Caminho para o Bem-Estar</h1>
+    <p class="lead">Encontre a psicoterapia acessível que você precisa, com profissionais dedicados.</p>
+    <hr class="my-4">
+    <p>
+        Explore nossa lista de psicólogos qualificados e inicie sua jornada para o bem-estar.
+    </p>
+    <p class="d-grid gap-2 d-md-flex justify-content-center">
+        <a class="btn btn-primary btn-lg" asp-controller="Psicologo" asp-action="Index" role="button">Para Pacientes</a>
+        <a class="btn btn-outline-primary btn-lg ms-md-2" href="#" role="button">Para Psicólogos (Em Breve)</a> 
+    </p>
+</div>
+
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Conheça Nossos Psicólogos</h3>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var psicologo in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(string.IsNullOrEmpty(psicologo.FotoUrl) ? "/images/default-avatar.png" : psicologo.FotoUrl)"
+                             class="card-img-top profile-avatar-home" alt="Foto de @psicologo.Nome"
+                             onerror="this.onerror=null;this.src='/images/default-avatar.png';" />
+                        <div class="card-body">
+                            <h5 class="card-title">@psicologo.Nome @psicologo.Sobrenome</h5>
+                            <p class="card-text">
+                                <strong>CRP:</strong> @psicologo.CRP<br />
+                                <strong>Especialidades:</strong>
+                                @if (psicologo.Especialidades != null && psicologo.Especialidades.Any())
+                                {
+                                    @string.Join(", ", psicologo.Especialidades.Select(e => e.Nome).Take(2))
+                                    @if (psicologo.Especialidades.Count() > 2)
+                                    {
+                                        <span>...</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </p>
+                            <a asp-controller="Psicologo" asp-action="Details" asp-route-id="@psicologo.Id" class="btn btn-sm btn-outline-primary mt-2">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="text-center mt-5">
+            <a asp-controller="Psicologo" asp-action="Index" class="btn btn-lg btn-secondary">Ver Todos os Psicólogos</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            Nenhum psicólogo ativo para exibir no momento.
+        </div>
+    }
+</div>
+
+<style>
+    .profile-avatar-home {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 1px solid #eee;
+    }
+</style>
